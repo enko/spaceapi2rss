@@ -79,7 +79,10 @@ if ($res->getStatusCode() == 200) {
                     'date' => $spaceapi->state->lastchange,
                     'open' => $spaceapi->state->open,
                 ];
-                array_merge([$element], $history);
+                $history = array_merge([$element], $history);
+                if (count($history) > 20) {
+                    array_pop($history);
+                }
             }
         } else {
             $element = [
