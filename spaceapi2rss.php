@@ -3,25 +3,6 @@
  * Converts the open status of the space api into an rss feed.
  */
 
-/**
- * Config
- */
-
-$conf = [
-    // the url where your space api resides
-    'spaceapi' => 'https://status.krautspace.de/api',
-    // the url where the feed is reachable
-    'url' => 'https://status.krautspace.de/rss.xml',
-    // where the rss feed should be save to
-    'filepath' => __DIR__ . '/rss.xml',
-
-];
-
-
-/**
- * Dont edit down here
- */
-
 function getGUID(){
     if (function_exists('com_create_guid')){
         return com_create_guid();
@@ -41,6 +22,7 @@ function getGUID(){
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
+include_once __DIR__ . '/config.php';
 
 $client = new GuzzleHttp\Client();
 $client->setDefaultOption('verify', false);
