@@ -87,7 +87,7 @@ if ($res->getStatusCode() == 200) {
             }
             $fi->guid = 'urn:uuid:'. getGUID($item['date']);
             $fi->date = date('c', $item['date']);
-            // $fi->id = $item['date'];
+            $fi->link = $spaceapi->url;
             $fi->author = 'spaceapi2rss';
             $rss->addItem($fi);
         }
