@@ -3,22 +3,16 @@
  * Converts the open status of the space api into an rss feed.
  */
 
-function getGUID(){
-    if (function_exists('com_create_guid')){
-        return com_create_guid();
-    }else{
-        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
-        $charid = strtoupper(md5(uniqid(rand(), true)));
-        $hyphen = chr(45);// "-"
-        $uuid = chr(123)// "{"
-            .substr($charid, 0, 8).$hyphen
-            .substr($charid, 8, 4).$hyphen
-            .substr($charid,12, 4).$hyphen
-            .substr($charid,16, 4).$hyphen
-            .substr($charid,20,12)
-            .chr(125);// "}"
-        return $uuid;
-    }
+function getGUID($str){
+  $sha = sha1($str);
+  $charid = strtoupper($sha);
+  $hyphen = chr(45);// "-"
+  $uuid = substr($charid, 0, 8).$hyphen
+         .substr($charid, 8, 4).$hyphen
+         .substr($charid,12, 4).$hyphen
+         .substr($charid,16, 4).$hyphen
+         .substr($charid,20,12);
+  return $uuid;  
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -33,8 +27,9 @@ if ($res->getStatusCode() == 200) {
     $spaceapi = json_decode($spaceapi);
     if ($spaceapi instanceof stdClass) {
         $rss = new UniversalFeedCreator();
-        $rss->title = 'room status for ' . $spaceapi->space;
-        $rss->description = "";
+        $rss->title = 'Raumstatus für ' . $spaceapi->space;
+        $rss->description = 'Zeigt an ob der Raum geöffnet oder geschlossen ist.';
+        $rss->id = sha1($rss->title);
 
         $image = new FeedImage();
         $image->title = $spaceapi->space . " logo";
@@ -47,7 +42,7 @@ if ($res->getStatusCode() == 200) {
         $rss->descriptionTruncSize = 500;
         $rss->descriptionHtmlSyndicated = false;
 
-        $rss->link = '';
+        $rss->link = $spaceapi->url;
         $rss->syndicationURL = $conf['url'];
         $history = [];
         if (file_exists(__DIR__ . '/hist_data')) {
@@ -81,8 +76,10 @@ if ($res->getStatusCode() == 200) {
             } else {
                 $fi->title = $spaceapi->space . ' ist geschlossen';
             }
-            $fi->link = $spaceapi->url;
+            $fi->guid = 'urn:uuid:'. getGUID($item['date']);
             $fi->date = date('c', $item['date']);
+            // $fi->id = $item['date'];
+            $fi->author = 'spaceapi2rss';
             $rss->addItem($fi);
         }
 
