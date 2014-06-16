@@ -18,6 +18,14 @@ function getGUID($str){
 require_once __DIR__ . '/vendor/autoload.php';
 include_once __DIR__ . '/config.php';
 
+$force_update = false;
+
+if (count($argv) == 2) {
+    if ($argv[1] == '--force') {
+        $force_update = true;
+    }
+}
+
 $client = new GuzzleHttp\Client();
 $client->setDefaultOption('verify', false);
 $res = $client->get($conf['spaceapi']);
@@ -50,7 +58,8 @@ if ($res->getStatusCode() == 200) {
         }
         if (count($history) > 0) {
             if ($history[0]['open'] == $spaceapi->state->open) {
-                die("Nothing changed, nothing to do.\n");
+                if (!$force_update)
+                    die("Nothing changed, nothing to do.\n");
             } else {
                 $element = [
                     'date' => $spaceapi->state->lastchange,
