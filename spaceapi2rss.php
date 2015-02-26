@@ -81,9 +81,9 @@ if ($res->getStatusCode() == 200) {
         foreach ($history as $item) {
             $fi = new FeedImage();
             if ($item['open']) {
-                $fi->title = $spaceapi->space . ' ist geöffnet';
+                $fi->title = $spaceapi->space . ' ist seit ' . date('G:i',$item['date']) . ' Uhr geöffnet';
             } else {
-                $fi->title = $spaceapi->space . ' ist geschlossen';
+                $fi->title = $spaceapi->space . ' ist seit ' . date('G:i',$item['date']) . ' Uhr geschlossen';
             }
             $fi->guid = 'urn:uuid:'. getGUID($item['date']);
             $fi->date = date('c', $item['date']);
